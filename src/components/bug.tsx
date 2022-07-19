@@ -1,22 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
+import { Bug as BugSchema } from "../interfaces";
 
-const Bug: React.FC<{ bug: any }> = ({ bug }) => {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faExpandAlt } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faExpandAlt);
+
+const Bug: React.FC<{ bug: BugSchema }> = ({ bug }) => {
 
     const shade = classNames(
-        "list-group-item", "list-group-item-action", {
+        "card", {
         "list-group-item-success": bug.priority === "Low",
         "list-group-item-warning": bug.priority === "Med",
         "list-group-item-danger": bug.priority === "High",
     })
-    const link = "/view/" + bug["_id"];
+    const link = "/view/" + bug.bugId;
 
     return (
         <div>
-            <li className="d-flex flex-row position-relative">
-                <Link className={shade} to={link}>{bug.bugName}</Link>
-            </li>
+            <div className={shade}>
+                <div className="card-body">
+                    <h5 className="card-title">{ bug.bugName }</h5>
+                    <div className="d-flex justify-content-between">
+                        <p className="card-text text-truncate">{ bug.description }</p>
+                        <Link to={link} className="text-dark text-end">
+                            <FontAwesomeIcon icon={faExpandAlt} />
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

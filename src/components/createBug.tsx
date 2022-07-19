@@ -3,6 +3,8 @@ import { Navigate, useNavigate } from "react-router";
 import React, { useState, useEffect, useContext } from "react";
 import { User } from '../interfaces';
 import { UserContext } from "./userContext";
+import { apiBugBase } from "../api/bugApi";
+import { authUser, getAllUserByCompany } from "../api/userApi";
 
 const CreateBug: React.FC = () => {
     const [bugName, setBugName] = useState<string>('');
@@ -11,6 +13,7 @@ const CreateBug: React.FC = () => {
     const [description, setDescription] = useState<string>('');
     const [assginee, setAssginee] = useState<string>('');
     const [priority, setPriority] = useState<string>('Low');
+    const [company, setCompany] = useState('');
     const [users, setUsers] = useState<Array<string>>(["-"]);
     const [toAuth, setToAuth] = useState<boolean>(false);
     const { user } = useContext(UserContext);
@@ -27,25 +30,27 @@ const CreateBug: React.FC = () => {
             assginee,
         }
         console.log(bug);
-        axios.post('https://bug-tracker-project1.herokuapp.com/bugs/add', bug)
+        axios.post(apiBugBase, bug, { headers: { Authorization: `Bearer ${user}` } })
             .then((res: any) => console.log(res.data))
             .catch((err) => console.log("no user", err));
         navigate('/bug');
     }
 
     useEffect(() => {
-        //get all users
-        axios.get('https://bug-tracker-project1.herokuapp.com/api/auth')
+        //get user info
+        axios.post(authUser + user, {"token": user}, { headers: { Authorization: `Bearer ${user}` } })
+            .then((res) => {
+                setUsername(res.data.data.username);
+                setCompany(res.data.data.company);
+            })
+
+        //get all users by company id
+        axios.get(getAllUserByCompany + company, { headers: { Authorization: `Bearer ${user}` } })
             .then((res) => {
                 const names: Array<string> = res.data.map((user: User) => user.username);
                 setUsers(["-", ...names]);
             })
-        //get user info
-        axios.get('https://bug-tracker-project1.herokuapp.com/api/private', { headers: { Authorization: `Bearer ${user}` } })
-            .then((res) => {
-                setUsername(res.data.data.username);
-            })
-    }, [user])
+    }, [user, company])
 
     return (
         <div>
