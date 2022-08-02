@@ -17,15 +17,15 @@ const Bug: React.FC<{ bug: BugSchema }> = ({ bug }) => {
         "list-group-item-warning": bug.priority === "Med",
         "list-group-item-danger": bug.priority === "High",
     })
-    const link = "/view/" + bug.bugId;
+    const link = "/view/" + bug._id;
 
     return (
         <div>
             <div className={shade}>
                 <div className="card-body">
-                    <h5 className="card-title">{ bug.bugName }</h5>
+                    <h5 className="card-title">{bug.bugName}</h5>
                     <div className="d-flex justify-content-between">
-                        <p className="card-text text-truncate">{ bug.description }</p>
+                        <p className="card-text text-truncate">{bug.description}</p>
                         <Link to={link} className="text-dark text-end">
                             <FontAwesomeIcon icon={faExpandAlt} />
                         </Link>

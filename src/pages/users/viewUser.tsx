@@ -16,30 +16,31 @@ const ViewUser: React.FC = () => {
     const [company, setCompany] = useState<string>('');
     const [companyList, setCompanyList] = useState<CompanySchema[]>([]);
     const [newCompanyName, setNewCompanyName] = useState('');
-    const [cId, setCId] = useState<number>(0);
-    const [id, setId] = useState<number>(0);
+    const [cId, setCId] = useState<string>("0");
+    const [id, setId] = useState<string>("0");
     const [password, setPassword] = useState<string>('');
     const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     //call to the db for users and company info
     useEffect(() => {
+        console.log(user);
         //get User Data
-        axios.post(authUser + user, {"token": user}, { headers: { Authorization: `Bearer ${user}` } })
+        axios.post(authUser + user, { "token": user }, { headers: { Authorization: `Bearer ${user}` } })
             .then((res) => {
                 //console.log(res.data);
                 setPassword(res.data.password);
                 setUsername(res.data.username);
                 setEmail(res.data.email);
-                setId(res.data.userId);
-                setCId(res.data.company);
+                setId(res.data._id);
+                setCId(res.data.companyId);
 
                 //get Company Name 
-                if(res.data.company !== 0) {
-                    axios.get(apiCompanyParam + res.data.company, { headers: { Authorization: `Bearer ${user}` } })
+                if (res.data.companyId !== 0) {
+                    axios.get(apiCompanyParam + res.data.companyId, { headers: { Authorization: `Bearer ${user}` } })
                         .then((result) => {
-                            setCompany(result.data.companyName);   
-                        }) 
+                            setCompany(result.data.companyName);
+                        })
                         .catch((err) => {
                             console.error(err);
                         })
@@ -63,17 +64,17 @@ const ViewUser: React.FC = () => {
         e.preventDefault();
         var nextCompanyId = cId;
         //if company is new, create a new one and get the id
-        if(toggleCompanyInput === true){
-            const postCompany = {"companyName": newCompanyName, "owner": id}
+        if (toggleCompanyInput === true) {
+            const postCompany = { "companyName": newCompanyName, "owner": id }
             axios.post(apiCompanyBase, postCompany, { headers: { Authorization: `Bearer ${user}` } })
                 .then((res) => {
                     console.log(res.data);
                     nextCompanyId = res.data.id;
                 })
                 .catch((err) => console.error(err));
-        }  
+        }
 
-        const updateUser = {"userId": id, password, email, username, "company": nextCompanyId};
+        const updateUser = { "_id": id, password, email, username, "company": nextCompanyId };
         console.log("updating to: ", updateUser);
         axios.put(apiUserBase, updateUser, { headers: { Authorization: `Bearer ${user}` } })
             .then((res) => {
@@ -107,19 +108,19 @@ const ViewUser: React.FC = () => {
                 <div className="mb-3">
                     {
                         toggleCompanyInput ?
-                        <CompanyInput newCompany={newCompanyName} setNewCompany={setNewCompanyName} /> :
-                        <CompanySelect companyList={companyList} setCompany={setCId} 
-                        default={ {label: company, value: cId} } /> 
+                            <CompanyInput newCompany={newCompanyName} setNewCompany={setNewCompanyName} /> :
+                            <CompanySelect companyList={companyList} setCompany={setCId}
+                                default={{ label: company, value: cId }} />
                     }
                     <div className="form-check form-switch">
-                        <input 
+                        <input
                             className="form-check-input mt-2" type="checkbox" id="flexSwitchCheckDefault"
                             checked={toggleCompanyInput} onChange={() => setToggleCompanyInput(!toggleCompanyInput)}
                         />
                         <label className="form-text" htmlFor="flexSwitchCheckDefault">Create New Company</label>
-                    </div> 
+                    </div>
                 </div>
-                
+
                 <button type="button" className="btn btn-secondary me-1" onClick={() => navigate("/bug")}>Back</button>
                 <input className="btn btn-primary me-1" type="submit" value="Save" />
             </form>

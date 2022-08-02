@@ -8,17 +8,17 @@ import { Bug as BugSchema, Employees, User as UserSchema } from "../interfaces";
 
 import Spinner from "./utilities/spinner";
 interface editProps {
-    id: string | undefined, 
+    id: string | undefined,
     bug: BugSchema,
     toggle: Dispatch<SetStateAction<boolean>>,
 }
 
-const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
+const EditBug: React.FC<editProps> = ({ id, bug, toggle }) => {
     const [bugName, setBugName] = useState<string>('');
-    const [reporterId, setReporterId] = useState<number>(0);
+    const [reporterId, setReporterId] = useState<string>("0");
     const [type, setType] = useState<string>('Bug');
     const [description, setDescription] = useState<string>('');
-    const [assigneeId, setAssigneeId] = useState<number>(0);
+    const [assigneeId, setAssigneeId] = useState<string>("0");
     const [status, setStatus] = useState<string>('');
     const [priority, setPriority] = useState<string>('Low');
     const { user } = useContext(UserContext);
@@ -37,13 +37,13 @@ const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
 
     useEffect(() => {
         //there's a assginee, so it can't be unassigned 
-        if (assigneeId !== 0  && status === "Unassigned") {
+        if (assigneeId !== "0" && status === "Unassigned") {
             console.log("terms met, change status");
             setStatus("To Do");
         }
 
         //there's no assginee, so its unassigned 
-        if (assigneeId === 0 && status !== "Unassigned") {
+        if (assigneeId === "0" && status !== "Unassigned") {
             setStatus("Unassigned");
         }
     }, [assigneeId, status])
@@ -53,7 +53,7 @@ const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
         onSuccess: data => {
             console.log("updated data: ", data);
             queryClient.setQueriesData('bug', {
-                bugId: Number(id),
+                _id: id,
                 bugName,
                 type,
                 description,
@@ -66,22 +66,22 @@ const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
         }
     });
 
-    const {isLoading, isError, data} = useQuery('coworkers', () => getAllCompanyUsersByToken(user));
-    if(isLoading) {
+    const { isLoading, isError, data } = useQuery('coworkers', () => getAllCompanyUsersByToken(user));
+    if (isLoading) {
         return <Spinner />;
     }
-    if(isError === undefined || isError) {
-        return <Navigate to="/"/>;
+    if (isError === undefined || isError) {
+        return <Navigate to="/" />;
     }
     const coworkers: Array<Employees> = [
-        {"userId": 0, "username": "-"}, 
-        ...data.map((user: UserSchema) => ({ "userId": user.userId, "username": user.username }))
+        { "_id": 0, "username": "-" },
+        ...data.map((user: UserSchema) => ({ "_id": user._id, "username": user.username }))
     ];
 
     const saveBug = (e: React.FormEvent) => {
         e.preventDefault();
         const newBug: BugSchema = {
-            bugId: Number(id),
+            _id: id as string,
             bugName,
             type,
             description,
@@ -94,7 +94,7 @@ const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
         saveMutation.mutateAsync(newBug)
     }
 
-    return(
+    return (
         <div className="mx-auto col-sm-5 mt-4">
             <h1>Editing: {bugName} </h1>
             <form className="container" onSubmit={saveBug}>
@@ -156,9 +156,9 @@ const EditBug: React.FC<editProps> = ({id, bug, toggle}) => {
                     <label>Assginee: </label>
                     <select className="form-control"
                         value={assigneeId}
-                        onChange={e => setAssigneeId(Number(e.target.value))}
+                        onChange={e => setAssigneeId(e.target.value)}
                     >
-                        {coworkers.map((user) => <option key={user.userId} value={user.userId}>{user.username}</option>)}
+                        {coworkers.map((user) => <option key={user._id} value={user._id}>{user.username}</option>)}
                     </select>
                 </div>
                 <input className="btn btn-primary me-1" type="submit" value="Save" />

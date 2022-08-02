@@ -17,33 +17,33 @@ const AddBug: React.FC<AddProps> = ({ addBugMutation }) => {
     const employeesQuery = useQuery('employees', () => getAllCompanyUsersByToken(user));
     const userQuery = useQuery('userData', () => getUserByToken(user));
 
-    if(employeesQuery.isLoading || userQuery.isLoading){
+    if (employeesQuery.isLoading || userQuery.isLoading) {
         console.log("loading");
         return <ExceptionBox loading={true} />
     }
 
-    if(employeesQuery.isError || userQuery.isError || employeesQuery.data === undefined || userQuery.data === undefined){
+    if (employeesQuery.isError || userQuery.isError || employeesQuery.data === undefined || userQuery.data === undefined) {
         console.log("error")
         return <ExceptionBox loading={false} />
     }
-    
+
     console.log("success");
     let employees: Array<Employees> = employeesQuery.data.map(
-        (user: User) => ({ "userId": user.userId, "username": user.username })
+        (user: User) => ({ "_id": user._id, "username": user.username })
     );
-    employees = [{"userId": 0, "username": "-"}, ...employees];
+    employees = [{ "_id": "0", "username": "-" }, ...employees];
 
     //creates new bug and closes the popup
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const status = (assigneeId !== 0) ? "To Do" : "Unassigned"; 
+        const status = (assigneeId !== 0) ? "To Do" : "Unassigned";
         const bug = {
             bugName,
             type,
             description,
             status: status,
             priority,
-            reporterId: userQuery.data.userId,
+            reporterId: userQuery.data._id,
             assigneeId,
         }
         console.log(bug);
@@ -78,42 +78,42 @@ const AddBug: React.FC<AddProps> = ({ addBugMutation }) => {
                                     />
                                 </div>
 
-                            <div className="mb-3">
-                                <label>Type: </label>
-                                <select className="form-control"
-                                    onChange={e => setType(e.target.value)}
-                                >
-                                    <option value={"Bug"}>Bug</option>
-                                    <option value={"Task"}>Task</option>
-                                    <option value={"Feature"}>Feature</option>
-                                </select>
-                            </div>
+                                <div className="mb-3">
+                                    <label>Type: </label>
+                                    <select className="form-control"
+                                        onChange={e => setType(e.target.value)}
+                                    >
+                                        <option value={"Bug"}>Bug</option>
+                                        <option value={"Task"}>Task</option>
+                                        <option value={"Feature"}>Feature</option>
+                                    </select>
+                                </div>
 
-                            <div className="mb-3">
-                                <label htmlFor="description">Description: </label>
-                                <textarea value={description} name="description"
-                                    className="form-control" placeholder="Enter Description"
-                                    onChange={e => setDescription(e.target.value)}
-                                />
-                            </div>
+                                <div className="mb-3">
+                                    <label htmlFor="description">Description: </label>
+                                    <textarea value={description} name="description"
+                                        className="form-control" placeholder="Enter Description"
+                                        onChange={e => setDescription(e.target.value)}
+                                    />
+                                </div>
 
-                            <div className="mb-3">
-                                <label>Priority: </label>
-                                <select className="form-control"
-                                    onChange={e => setPriority(e.target.value)}
-                                >
-                                    <option value={"Low"}>Low</option>
-                                    <option value={"Med"}>Med</option>
-                                    <option value={"High"}>High</option>
-                                </select>
-                            </div>
+                                <div className="mb-3">
+                                    <label>Priority: </label>
+                                    <select className="form-control"
+                                        onChange={e => setPriority(e.target.value)}
+                                    >
+                                        <option value={"Low"}>Low</option>
+                                        <option value={"Med"}>Med</option>
+                                        <option value={"High"}>High</option>
+                                    </select>
+                                </div>
 
                                 <div className='mb-3'>
                                     <label>Assginee: (Optional)</label>
                                     <select className="form-control"
                                         onChange={e => setAssigneeId(Number(e.target.value))}
                                     >
-                                        {employees.map((user) => <option key={user.userId} value={user.userId}>{user.username}</option>)}
+                                        {employees.map((user) => <option key={user._id} value={user._id}>{user.username}</option>)}
                                     </select>
                                 </div>
                             </form>
@@ -129,10 +129,10 @@ const AddBug: React.FC<AddProps> = ({ addBugMutation }) => {
     )
 }
 
-const ExceptionBox: React.FC<{loading: boolean}> = ({loading}) => {
-    const content = loading ? <Spinner/>: <div>Error</div>;
+const ExceptionBox: React.FC<{ loading: boolean }> = ({ loading }) => {
+    const content = loading ? <Spinner /> : <div>Error</div>;
 
-    return(
+    return (
         <div className="modal" tabIndex={-1} id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content">

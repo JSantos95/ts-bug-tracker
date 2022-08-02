@@ -16,12 +16,12 @@ const Login: React.FC = () => {
     const [failedLogIn, setFailedLogIn] = useState<boolean>(false);
 
     const loginMutation = useMutation((thisUser: UserSchema) => login(thisUser), {
-        onError:() => {
+        onError: () => {
             setFailedLogIn(true);
         },
         onSuccess: (data) => {
-            sessionStorage.setItem('token', data);
-            setUser(data);
+            sessionStorage.setItem('token', data.token);
+            setUser(data.token);
             navigate('/bug');
         }
     })
@@ -38,7 +38,7 @@ const Login: React.FC = () => {
         setLogging(false);
     }
 
-    if(loginMutation.isLoading) {
+    if (loginMutation.isLoading) {
         return <Spinner />
     }
 

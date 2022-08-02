@@ -18,31 +18,32 @@ const CreateUser: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [company, setCompany] = useState<number>(0);
+    const [company, setCompany] = useState<string>("0");
     const [logging, setLogging] = useState<boolean>(false);
     const [failedLogIn, setFailedLogIn] = useState<boolean>(false);
 
     const registerMutation = useMutation((thisUser: UserSchema) => register(thisUser), {
-        onError:() => {
+        onError: () => {
             setFailedLogIn(true);
         },
         onSuccess: (data) => {
-            sessionStorage.setItem('token', data);
-            setUser(data);
+            sessionStorage.setItem('token', data.token);
+            setUser(data.token);
             navigate('/bug');
         }
     })
 
     //Get All Companys
-    const {isLoading: companyLoading, isError: companyError, data: companyData} = useQuery('companys', getAllCompanys);
-    if(companyLoading) {
+    const { isLoading: companyLoading, isError: companyError, data: companyData } = useQuery('companys', getAllCompanys);
+    if (companyLoading) {
         return <Spinner />;
     }
-    if(companyData === undefined || companyError) {
-        return <Navigate to="/"/>;
+    if (companyData === undefined || companyError) {
+        return <Navigate to="/" />;
     }
-    var employersList = companyData.map((com: CompanySchema) => ({"companyId" : com.companyId, "companyName": com.companyName}));
-    employersList = ([{"companyId" : 0, "companyName": ""}, ...employersList]);
+    console.log(companyData);
+    var employersList = companyData.map((com: CompanySchema) => ({ "_id": com._id, "companyName": com.companyName }));
+    employersList = ([{ "companyId": 0, "companyName": "" }, ...employersList]);
 
     //register 
     const authentication = async (e: React.FormEvent) => {
@@ -52,14 +53,15 @@ const CreateUser: React.FC = () => {
             username,
             password,
             email,
-            company
+            "companyId": company
         }
+        console.log(thisUser);
         registerMutation.mutateAsync(thisUser)
         console.log(logging);
         setLogging(false);
     }
 
-    if(registerMutation.isLoading) {
+    if (registerMutation.isLoading) {
         return <Spinner />
     }
 
@@ -79,7 +81,7 @@ const CreateUser: React.FC = () => {
                         className="form-control" placeholder="Enter Password"
                         minLength={5} required
                         onChange={e => setPassword(e.target.value)}
-                    />    
+                    />
                     <span id="passwordHelpInline" className="form-text">
                         Must at least 5 characters long
                     </span>
@@ -93,7 +95,7 @@ const CreateUser: React.FC = () => {
                         />
                     </div>
                     <div className="mb-3">
-                        <CompanySelect companyList={employersList} setCompany={setCompany}/>
+                        <CompanySelect companyList={employersList} setCompany={setCompany} />
                     </div>
                 </div>
                 {failedLogIn && <ErrorText message="Incorrect Email or Password. Try Again" />}

@@ -3,30 +3,30 @@ import Select, { OnChangeValue, SingleValue } from 'react-select';
 import { Company } from '../interfaces';
 
 type selectOp = {
-    label: string, 
-    value: number
+    label: string,
+    value: string
 };
 interface SelectProps {
     companyList: Company[];
-    setCompany: React.Dispatch<React.SetStateAction<number>>;
+    setCompany: React.Dispatch<React.SetStateAction<string>>;
     default?: selectOp;
 };
 
 const CompanySelect: React.FC<SelectProps> = (props) => {
     const companyOptions = props.companyList.map((company) => {
-        let container: selectOp = {label: "", value: 0}; 
+        let container: selectOp = { label: "", value: "0" };
 
         container.label = company.companyName;
-        container.value = company.companyId;
+        container.value = company._id;
 
         return container;
     });
     const start = (props.default) ? props.default : companyOptions[0];
-    const [selectedOption, setSelectedOption ] = useState<OnChangeValue<selectOp, false>>(start);
+    const [selectedOption, setSelectedOption] = useState<OnChangeValue<selectOp, false>>(start);
 
     //if option is ever null Company should be set to 0
     const handleChange = (option: SingleValue<selectOp>) => {
-        (option != null) ? props.setCompany(option.value) : props.setCompany(0);
+        (option != null) ? props.setCompany(option.value) : props.setCompany("0");
         setSelectedOption(option);
     }
 
@@ -34,12 +34,12 @@ const CompanySelect: React.FC<SelectProps> = (props) => {
         console.log("triggered")
         props.default && setSelectedOption(props.default);
     }, [props.default])
-    
+
     return (
         <div>
             <label>Company: (Optional)</label>
             <Select
-                value={selectedOption} 
+                value={selectedOption}
                 onChange={option => handleChange(option)}
                 options={companyOptions}
             />

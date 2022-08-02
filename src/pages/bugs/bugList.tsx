@@ -10,7 +10,7 @@ import { addBug, getAllBugsByToken, getUserByToken } from "../../api/bugTrackerA
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Spinner  from "../../components/utilities/spinner";
+import Spinner from "../../components/utilities/spinner";
 import { Bug as BugSchema } from "../../interfaces";
 
 library.add(faPlus);
@@ -18,8 +18,8 @@ library.add(faPlus);
 const BugList: React.FC = () => {
     const { user } = useContext(UserContext);
     const queryClient = useQueryClient();
-    
-    const {data: userData, isLoading: userLoading} = useQuery('userInfo', () => getUserByToken(user));
+
+    const { data: userData, isLoading: userLoading } = useQuery('userInfo', () => getUserByToken(user));
     const { isLoading, isError, data } = useQuery('bugs', () => getAllBugsByToken(user));
 
     const addBugMutation = useMutation((bug: BugSchema) => addBug(bug, user), {
@@ -28,34 +28,34 @@ const BugList: React.FC = () => {
         }
     })
 
-    if(isLoading || userLoading){
+    if (isLoading || userLoading) {
         return <Spinner />;
     }
 
-    if(isError || data === undefined || userData === undefined){
+    if (isError || data === undefined || userData === undefined) {
         return <Navigate to="/user" state={{ newUser: false, expired: true }} />
     }
-    
+
     const unassignedList = data
-    .filter((bug) => bug.status === "Unassigned")
-    .map((bug) => <Bug key={bug["bugId"]} bug={bug} />)
+        .filter((bug) => bug.status === "Unassigned")
+        .map((bug) => <Bug key={bug["_id"]} bug={bug} />)
 
     const toDoList = data
         .filter((bug) => bug.status === "To Do")
-        .map((bug) => <Bug key={bug["bugId"]} bug={bug} />)
+        .map((bug) => <Bug key={bug["_id"]} bug={bug} />)
 
     const inProgressList = data
         .filter((bug) => bug.status === "In Progress")
-        .map((bug) => <Bug key={bug["bugId"]} bug={bug} />)
+        .map((bug) => <Bug key={bug["_id"]} bug={bug} />)
 
     const qaList = data
         .filter((bug) => bug.status === "QA")
-        .map((bug) => <Bug key={bug["bugId"]} bug={bug} />)
+        .map((bug) => <Bug key={bug["_id"]} bug={bug} />)
 
     const completeList = data
         .filter((bug) => bug.status === "Complete")
-        .map((bug) => <Bug key={bug["bugId"]} bug={bug} />)
-    
+        .map((bug) => <Bug key={bug["_id"]} bug={bug} />)
+
     return (
         <div>
             <div className="container my-4 bugList">
@@ -65,7 +65,7 @@ const BugList: React.FC = () => {
                         <FontAwesomeIcon icon={faPlus} size="2x" />
                     </button>
                 </div>
-                <AddBug addBugMutation={addBugMutation}/> 
+                <AddBug addBugMutation={addBugMutation} />
                 <br />
                 <div className="d-grid gap-5">
                     <div className="row row-col-auto pt-1 justify-content-center" style={{ minHeight: "20vh" }}>
