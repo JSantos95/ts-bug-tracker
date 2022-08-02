@@ -1,32 +1,32 @@
 import { UseMutationResult } from "react-query"
 
 export interface User {
-    userId?: number,
+    _id?: string,
     username: string,
     email?: string,
     password: string,
-    company?: number,
+    companyId?: string,
 }
 
 export interface Company {
-    companyId: number,
+    _id: string,
     companyName: string,
     owner?: number,
 }
 
 export interface Bug {
-    bugId: number,
+    _id: string,
     bugName: string,
     type: string,
     description: string,
     status: string,
     priority: string,
-    reporterId: number,
-    assigneeId: number
+    reporterId: string,
+    assigneeId: string
 }
 
 export interface Employees {
-    userId: number, 
+    _id: string,
     username: string,
 }
 
