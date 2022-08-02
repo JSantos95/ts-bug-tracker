@@ -1,5 +1,5 @@
 //All api for bug table 
-let host:string = "https://localhost:7216/";
+let host: string = "https://bug-tracker-project1.herokuapp.com/";
 
 export var getUserBugs = host + "api/Bug/user/";
 export var getCompanyBugs = host + "api/"

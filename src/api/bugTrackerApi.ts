@@ -1,8 +1,8 @@
-import axios from "axios";  
+import axios from "axios";
 import { Bug, User } from "../interfaces";
 
 const bugTrackerApi = axios.create({
-    baseURL: "https://localhost:7216/api/",
+    baseURL: "https://bug-tracker-project1.herokuapp.com/api/",
 })
 
 //For Bug Table
@@ -11,12 +11,12 @@ export const getBugs = async (auth: any) => {
     return response.data;
 }
 
-export const getBugsById = async (id: string, auth:any) => {
+export const getBugsById = async (id: string, auth: any) => {
     const response = await bugTrackerApi.get('Bug/' + id, { headers: { 'Authorization': `Bearer ${auth}` } });
     return response.data;
 }
 
-export const getAllUserBugs = async (userId:string, auth:any) => {
+export const getAllUserBugs = async (userId: string, auth: any) => {
     const response = await bugTrackerApi.get('Bug/user/' + userId, { headers: { 'Authorization': `Bearer ${auth}` } });
     return response.data;
 }
@@ -26,15 +26,15 @@ export const getAllBugsByToken = async (token: any) => {
     return response.data as Bug[];
 }
 
-export const addBug = async (bug: Bug, auth:any) => {
+export const addBug = async (bug: Bug, auth: any) => {
     return await bugTrackerApi.post('Bug', bug, { headers: { 'Authorization': `Bearer ${auth}` } });
 }
 
-export const updateBug = async (bug: Bug, auth:any) => {
+export const updateBug = async (bug: Bug, auth: any) => {
     return await bugTrackerApi.put('Bug', bug, { headers: { 'Authorization': `Bearer ${auth}` } });
 }
 
-export const deleteBug = async (id: string, auth:any) => {
+export const deleteBug = async (id: string, auth: any) => {
     return await bugTrackerApi.delete('Bug/' + id, { headers: { 'Authorization': `Bearer ${auth}` } });
 }
 
@@ -74,7 +74,7 @@ export const getAllCompanyUsersByToken = async (token: any) => {
 }
 
 export const getUserByToken = async (token: any) => {
-    const res = await bugTrackerApi.post('User/auth/' + token, token, { headers: { 'Authorization': `Bearer ${token}` } });
+    const res = await bugTrackerApi.post('User/auth/' + token, { "token": token }, { headers: { 'Authorization': `Bearer ${token}` } });
     return res.data as User;
 }
 

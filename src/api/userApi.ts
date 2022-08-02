@@ -1,5 +1,5 @@
 //All api for user table 
-let host:string = "https://localhost:7216/";
+let host: string = "https://bug-tracker-project1.herokuapp.com/";
 
 export var apiUserBase = host + "api/User";
 export var apiUserWithId = host + "api/User/";
